@@ -16,7 +16,8 @@ class PriceSimulator:
         W0 = np.zeros((self.paths, 1))
         t = np.linspace(0, self.time, self.n)
         w = np.cumsum(np.random.normal(0, np.sqrt(dt), size=(self.paths, self.n - 1)), axis=1)
-        W = np.hstack([W0, w])
+        W = np.hstack([W0, w]) # cumulative sum of the Brownian increments
+        # GBM closed form solution S_t = S0 * exp((mu - 0.5 * sigma^2) * t + sigma * Wt)
         S = self.S0 * np.exp((self.mu - 0.5 * self.sigma ** 2) * t + self.sigma * W)
         return S
     
@@ -36,7 +37,7 @@ class GreeksEngine:
         return d1, d2
 
     def compute_all_deltas(self, S, t):
-        d1, _ = self._compute_d1_d2(S[:, :-1], t[:-1])  # exclude last step      
+        d1, _ = self._compute_d1_d2(S[:, :-1], t[:-1])  # exclude last step because it's at expiry so delta at expiry will be computed separately
         if self.option_type == "call" :
             deltas = norm.cdf(d1)
             # compute expiry column and hstack
@@ -77,7 +78,7 @@ class GreeksEngine:
         N_d2 = norm.cdf(d2)
         discount = np.exp(-self.r * (self.T - t))
         C = S * N_d1 - self.K * discount * N_d2
-        P = C + self.K * discount - S
+        P = C + self.K * discount - S # put-call parity
 
         if self.option_type == "call" :
             return C
