@@ -32,8 +32,9 @@ class GreeksEngine:
         self.T = T
 
     def _compute_d1_d2(self, S, t):
-        d1 = (np.log(S / self.K) + (self.r + 1 / 2 * self.sigma ** 2) * (self.T - t)) / (self.sigma * np.sqrt(self.T - t))
-        d2 = d1 - (self.sigma * np.sqrt(self.T - t))
+        tau = np.maximum(self.T - t, 1e-12)
+        d1 = (np.log(S / self.K) + (self.r + 0.5 * self.sigma ** 2) * (tau)) / (self.sigma * np.sqrt(tau))
+        d2 = d1 - (self.sigma * np.sqrt(tau))
         return d1, d2
 
     def compute_all_deltas(self, S, t):
@@ -48,6 +49,12 @@ class GreeksEngine:
             # compute expiry column and hstack
             delta_last = np.where(S[:, -1] < self.K, -1, np.where(S[:, -1] == self.K, -0.5, 0)).reshape(-1, 1)
             return np.hstack([deltas, delta_last])
+        
+    def compute_all_gammas(self, S, t):
+        d1, _ = self._compute_d1_d2(S[:, :-1], t[:-1])
+        gammas = norm.pdf(d1) / (S[:, :-1] * self.sigma * np.sqrt(self.T - t[:-1]))
+        gamma_last = np.zeros((S.shape[0], 1))
+        return np.hstack([gammas, gamma_last])
 
     def delta_compute(self, S, t):
         if self.option_type == "call" :
