@@ -65,6 +65,20 @@ class GreeksEngine:
                 d1, _ = self._compute_d1_d2(S, t)
                 N_d1 = norm.cdf(d1)
                 return N_d1 - 1
+            
+    def gamma_compute(self, S, t):
+        if t >= self.T:
+            return 0
+        d1, _ = self._compute_d1_d2(S, t)
+        gamma = norm.pdf(d1) / (S * self.sigma * np.sqrt(self.T - t))
+        return gamma
+    
+    def vega_compute(self, S, t):
+        if t >= self.T:
+            return 0
+        d1, _ = self._compute_d1_d2(S, t)
+        vega = S * norm.pdf(d1) * np.sqrt(self.T - t)
+        return vega
         
     def price(self, S, t):
         if t >= self.T:                                                          
