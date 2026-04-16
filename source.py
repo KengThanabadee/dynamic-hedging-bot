@@ -87,6 +87,24 @@ class GreeksEngine:
         vega = S * norm.pdf(d1) * np.sqrt(self.T - t)
         return vega
         
+    def compute_all_prices(self, S, t):
+        d1, d2 = self._compute_d1_d2(S[:, :-1], t[:-1])  # exclude last step because it's at expiry so price at expiry will be computed separately
+        N_d1 = norm.cdf(d1)
+        N_d2 = norm.cdf(d2)
+        discount = np.exp(-self.r * (self.T - t[:-1]))
+        C = S[:, :-1] * N_d1 - self.K * discount * N_d2
+        P = C + self.K * discount - S[:, :-1] # put-call parity
+        
+        C_last = np.maximum(S[:, -1] - self.K, 0).reshape(-1, 1)
+        P_last = np.maximum(self.K - S[:, -1], 0).reshape(-1, 1)
+
+        C = np.hstack([C, C_last])
+        P = np.hstack([P, P_last])
+        if self.option_type == "call" :
+            return C
+        if self.option_type == "put":
+            return P
+        
     def price(self, S, t):
         if t >= self.T:                                                          
           if self.option_type == "call" : 
