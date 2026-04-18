@@ -30,7 +30,8 @@ class GreeksEngine:
         
     def compute_all_gammas(self, S, sigma, T, t):
         d1, _ = self._compute_d1_d2(S[:, :-1], sigma, T, t[:-1])
-        gammas = norm.pdf(d1) / (S[:, :-1] * sigma * np.sqrt(T - t[:-1]))
+        tau = np.maximum(T - t[:-1], 1e-12)
+        gammas = norm.pdf(d1) / (S[:, :-1] * sigma * np.sqrt(tau))
         gamma_last = np.zeros((S.shape[0], 1))
         return np.hstack([gammas, gamma_last])
 

@@ -13,7 +13,7 @@ class HedgingBot:
     def portfolio_values(self, S):
         return self.position * S + self.cash
     
-def delta_hedge_pnl(paths, all_deltas, premium, r, T, t, fee_rate, K):
+def delta_hedge_pnl(paths, all_deltas, premium, r, T, t, fee_rate, K, option_type="call"):
     delta_diff = all_deltas[:, 1:] - all_deltas[:, :-1]
     # prepend initial position change (from 0 to delta_0)
     initial_diff = all_deltas[:, 0:1] # shape (m, 1)
@@ -23,6 +23,10 @@ def delta_hedge_pnl(paths, all_deltas, premium, r, T, t, fee_rate, K):
     cash_changes -= cost
     time_remaining = T - t
     total_cash = premium * np.exp(r * T) + (cash_changes * np.exp(r * time_remaining)).sum(axis=1)
-    payoff = np.maximum(paths[:, -1] - K, 0)
+
+    if option_type.lower() not in ("call", "put"):           
+      raise ValueError(f"option_type must be 'call' or 'put', got '{option_type}'")
+    payoff = np.maximum(paths[:, -1] - K, 0) if option_type.lower() == "call" else np.maximum(K - paths[:, -1], 0)
+
     final_PnL = total_cash + all_deltas[:, -1] * paths[:, -1] - payoff
     return final_PnL

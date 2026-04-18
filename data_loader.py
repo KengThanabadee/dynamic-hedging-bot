@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 import requests
 
@@ -34,8 +33,3 @@ class DataLoader:
         df["time"] = pd.to_datetime(df["time"], unit="ms")
         df["close"] = df["close"].astype(float)
         return df.set_index("time")
-
-    def realized_vol(self, df, window, annualization_factor=252*24): # log return vol
-        log_returns = np.log(df["close"] / df["close"].shift())
-        result = log_returns.rolling(window).std() * np.sqrt(annualization_factor)
-        return result.rename("realized_vol")
