@@ -21,6 +21,7 @@ hedging/
     pricing.py      — GreeksEngine (BS delta/gamma/vega/price)
     hedger.py       — HedgingBot, delta_hedge_pnl
     risk.py         — var_cvar (VaR, CVaR)
+    vol.py          — realized_vol (rolling realized volatility)
 data_loader.py      — DataLoader (Binance API, realized vol)
 simulation.ipynb    — Monte Carlo simulation: delta + gamma hedging
 backtest.ipynb      — Backtest on real BTC data (in progress)
