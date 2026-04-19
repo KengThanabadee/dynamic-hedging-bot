@@ -10,6 +10,10 @@ class GreeksEngine:
         self.r = r
 
     def _compute_d1_d2(self, S, sigma, T, t):
+        if np.any(S <= 0):
+            raise ValueError(f"S must be > 0, got {S}")
+        if np.any(sigma <= 0):
+            raise ValueError(f"sigma must be > 0, got {sigma}")
         tau = np.maximum(T - t, 1e-12)
         d1 = (np.log(S / self.K) + (self.r + 0.5 * sigma ** 2) * (tau)) / (sigma * np.sqrt(tau))
         d2 = d1 - (sigma * np.sqrt(tau))

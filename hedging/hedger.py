@@ -28,5 +28,6 @@ def delta_hedge_pnl(paths, all_deltas, premium, r, T, t, fee_rate, K, option_typ
       raise ValueError(f"option_type must be 'call' or 'put', got '{option_type}'")
     payoff = np.maximum(paths[:, -1] - K, 0) if option_type.lower() == "call" else np.maximum(K - paths[:, -1], 0)
 
-    final_PnL = total_cash + all_deltas[:, -1] * paths[:, -1] - payoff
+    fee_last = fee_rate * np.abs(all_deltas[:, -1]) * paths[:, -1]
+    final_PnL = total_cash + all_deltas[:, -1] * paths[:, -1] - fee_last - payoff
     return final_PnL

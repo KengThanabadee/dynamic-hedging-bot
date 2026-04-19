@@ -7,8 +7,8 @@ class DataLoader:
     def __init__(self, symbol, interval, start, end):
         self.symbol = symbol
         self.interval = interval
-        self.start_ms = int(pd.Timestamp(start).timestamp() * 1000)
-        self.end_ms = int(pd.Timestamp(end).timestamp() * 1000)
+        self.start_ms = int(pd.Timestamp(start, tz="UTC").timestamp() * 1000)
+        self.end_ms = int(pd.Timestamp(end, tz="UTC").timestamp() * 1000)
 
     def fetch(self):
         params = {
@@ -20,9 +20,13 @@ class DataLoader:
         }
         all_candles = []
         while True:
-            data = requests.get(self.BASE_URL, params=params).json()
+            response = requests.get(self.BASE_URL, params=params)
+            response.raise_for_status()
+            data = response.json()
             if not data:
                 break
+            if not isinstance(data, list):
+                raise ValueError(f"Unexpected response from Binance: {data}")
             all_candles.extend(data)
             if len(data) < 1000:
                 break
