@@ -25,6 +25,7 @@ hedging/
 data_loader.py      — DataLoader (Binance API, realized vol)
 simulation.ipynb    — Monte Carlo simulation: delta + gamma hedging
 backtest.ipynb      — Backtest on real BTC data (in progress)
+tests/              — Unit tests for hedging package
 ```
 
 ## Installation
