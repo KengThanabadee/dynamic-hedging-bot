@@ -5,6 +5,8 @@ class GreeksEngine:
     def __init__(self, option_type, K, r):
         if option_type.lower() not in ("call", "put"):
             raise ValueError(f"option_type must be 'call' or 'put', got '{option_type}'")
+        if K <= 0:
+            raise ValueError(f"K must be > 0, got {K}")
         self.option_type = option_type.lower()
         self.K = K
         self.r = r

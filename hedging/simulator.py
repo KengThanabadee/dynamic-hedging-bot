@@ -2,6 +2,15 @@ import numpy as np
 
 class PriceSimulator:
     def __init__(self, S0, mu, sigma, T, n, m, model):
+        if S0 <= 0:
+            raise ValueError(f"S0 must be greater than 0, got {S0}")
+        if sigma <= 0:
+            raise ValueError(f"sigma must be greater than 0, got {sigma}")
+        if T <= 0:
+            raise ValueError(f"T must be greater than 0, got {T}")
+        if n < 2:
+            raise ValueError(f"n must be greater than 0, got {n}")
+        
         self.S0 = S0
         self.mu = mu
         self.sigma = sigma

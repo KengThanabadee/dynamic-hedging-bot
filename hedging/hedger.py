@@ -14,6 +14,10 @@ class HedgingBot:
         return self.position * S + self.cash
     
 def delta_hedge_pnl(paths, all_deltas, premium, r, T, t, fee_rate, K, option_type="call"):
+    if paths.shape != all_deltas.shape:
+        raise ValueError(f"paths and all_deltas must have the same shape, got {paths.shape} and {all_deltas.shape}")
+    if fee_rate < 0:
+        raise ValueError(f"fee_rate must be >= 0, got {fee_rate}")
     delta_diff = all_deltas[:, 1:] - all_deltas[:, :-1]
     # prepend initial position change (from 0 to delta_0)
     initial_diff = all_deltas[:, 0:1] # shape (m, 1)
