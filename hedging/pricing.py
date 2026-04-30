@@ -22,6 +22,8 @@ class GreeksEngine:
         return d1, d2
 
     def compute_all_deltas(self, S, sigma, T, t):
+        if isinstance(sigma, np.ndarray):
+            sigma = sigma[:-1]
         d1, _ = self._compute_d1_d2(S[:, :-1], sigma, T, t[:-1])  # exclude last step because it's at expiry so delta at expiry will be computed separately
         if self.option_type == "call" :
             deltas = norm.cdf(d1)
@@ -35,6 +37,8 @@ class GreeksEngine:
             return np.hstack([deltas, delta_last])
         
     def compute_all_gammas(self, S, sigma, T, t):
+        if isinstance(sigma, np.ndarray):
+            sigma = sigma[:-1]
         d1, _ = self._compute_d1_d2(S[:, :-1], sigma, T, t[:-1])
         tau = np.maximum(T - t[:-1], 1e-12)
         gammas = norm.pdf(d1) / (S[:, :-1] * sigma * np.sqrt(tau))
@@ -73,6 +77,8 @@ class GreeksEngine:
         return vega
         
     def compute_all_prices(self, S, sigma, T, t):
+        if isinstance(sigma, np.ndarray):
+            sigma = sigma[:-1]
         d1, d2 = self._compute_d1_d2(S[:, :-1], sigma, T, t[:-1])  # exclude last step because it's at expiry so price at expiry will be computed separately
         N_d1 = norm.cdf(d1)
         N_d2 = norm.cdf(d2)
